@@ -13,6 +13,8 @@ import resultHit from "../templates/result-hit";
 
 aa("setUserToken", "user-1");
 
+this._searchInstance.use(this._insightsMiddleware);
+
 const insightsMiddleware = createInsightsMiddleware({
   insightsClient: aa
 });
@@ -24,6 +26,7 @@ const insightsMiddleware = createInsightsMiddleware({
 class ResultPage {
   constructor() {
     this._registerClient();
+    this._createMiddleware();
     this._registerWidgets();
     this._startSearch();
   }
@@ -96,12 +99,6 @@ class ResultPage {
    * @return {void}
    */
   _startSearch() {
-    const insightsMiddleware = createInsightsMiddleware({
-      insightsClient: aa
-    });
-
-    this._searchInstance.use(insightsMiddleware);
-    aa("setUserToken", "demo-user");
     this._searchInstance.start();
   }
 }
