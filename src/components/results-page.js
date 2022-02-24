@@ -76,26 +76,7 @@ class ResultPage {
       hits({
         container: "#hits",
         templates: {
-          item: (hit, bindEvent) => {
-            const productURL =
-              "product.html?objectID=" +
-              hit.objectID +
-              "&queryID=" +
-              hit.__queryID;
-
-            return `
-              <a class="hit-card" href="${productURL}" ${bindEvent(
-              "click",
-              hit,
-              "Search Result Clicked"
-            )}>
-                <div class="hit-content">
-                  <img src="${hit.image}" alt="${hit.name}" />
-                  <div class="hit-name">${hit._highlightResult.name.value}</div>
-                </div>
-              </a>
-            `;
-          }
+          item: resultHit
         }
       }),
       refinementList({
