@@ -1,8 +1,21 @@
-import algoliasearch from 'algoliasearch';
-import instantsearch from 'instantsearch.js';
-import { searchBox, hits, pagination, refinementList } from 'instantsearch.js/es/widgets';
+import algoliasearch from "algoliasearch";
+import aa from "search-insights";
+import instantsearch from "instantsearch.js";
+import { createInsightsMiddleware } from "instantsearch.js/es/middlewares";
+import {
+  searchBox,
+  hits,
+  pagination,
+  refinementList
+} from "instantsearch.js/es/widgets";
 
-import resultHit from '../templates/result-hit';
+import resultHit from "../templates/result-hit";
+
+aa("setUserToken", "user-1");
+
+const insightsMiddleware = createInsightsMiddleware({
+  insightsClient: aa
+});
 
 /**
  * @class ResultsPage
@@ -29,7 +42,12 @@ class ResultPage {
     this._searchInstance = instantsearch({
       indexName: process.env.ALGOLIA_INDEX,
       searchClient: this._searchClient,
+      configure: {
+        clickAnalytics: true
+      }
     });
+
+    this._searchInstance.use(insightsMiddleware);
   }
 
   /**
@@ -40,54 +58,54 @@ class ResultPage {
   _registerWidgets() {
     this._searchInstance.addWidgets([
       searchBox({
-        container: '#searchbox',
+        container: "#searchbox"
       }),
       hits({
-        container: '#hits',
+        container: "#hits",
         templates: {
-          item: resultHit,
-        },
+          item: resultHit
+        }
       }),
       pagination({
-        container: '#pagination',
+        container: "#pagination"
       }),
       refinementList({
-        container: '#brand-facet',
-        attribute: 'brand',
+        container: "#brand-facet",
+        attribute: "brand"
       }),
       hits({
-      container: '#hits',
-      templates: {
-        item: (hit, bindEvent) => {
-          const productURL =
-           'product.html?objectID=' +
-            hit.objectID +
-            '&queryID=' +
-            hit.__queryID;
+        container: "#hits",
+        templates: {
+          item: (hit, bindEvent) => {
+            const productURL =
+              "product.html?objectID=" +
+              hit.objectID +
+              "&queryID=" +
+              hit.__queryID;
 
             return `
               <a class="hit-card" href="${productURL}" ${bindEvent(
-                'click',
-                hit,
-                'Search Result Clicked'
-              )}>
+              "click",
+              hit,
+              "Search Result Clicked"
+            )}>
                 <div class="hit-content">
                   <img src="${hit.image}" alt="${hit.name}" />
                   <div class="hit-name">${hit._highlightResult.name.value}</div>
                 </div>
               </a>
             `;
-          },
-        },
+          }
+        }
       }),
       refinementList({
-        container: '#categories-facet',
-        attribute: 'categories',
+        container: "#categories-facet",
+        attribute: "categories"
       }),
       refinementList({
-        container: '#pricerange-facet',
-        attribute: 'price_range',
-      }),
+        container: "#pricerange-facet",
+        attribute: "price_range"
+      })
     ]);
   }
 
@@ -98,11 +116,11 @@ class ResultPage {
    */
   _startSearch() {
     const insightsMiddleware = createInsightsMiddleware({
-      insightsClient: aa,
+      insightsClient: aa
     });
-    
+
     this._searchInstance.use(insightsMiddleware);
-    aa('setUserToken', 'demo-user');
+    aa("setUserToken", "demo-user");
     this._searchInstance.start();
   }
 }
